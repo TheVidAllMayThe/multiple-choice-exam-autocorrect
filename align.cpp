@@ -110,8 +110,8 @@ int main(int argc, char ** argv) {
 
 	cout << colWidth << endl;
 
-	cv::threshold(grid, grid, 120, 255, cv::THRESH_BINARY);
-	cv::threshold(grid, grid, 120, 255, cv::THRESH_BINARY_INV);
+	threshold(grid, grid, 120, 255, THRESH_BINARY);
+	threshold(grid, grid, 120, 255, THRESH_BINARY_INV);
 
 	vector < Mat > cols;
 	vector < Mat > a, b, c, d, v, f;
@@ -166,11 +166,6 @@ int main(int argc, char ** argv) {
 	}
 
   cout << "Size a: " << a.size() << endl;
-
-
-	namedWindow("Grid", WINDOW_NORMAL);
-	namedWindow("Display frame", WINDOW_NORMAL);
-
 	
   Rect border(Point(0, 0), f[4].size());
 	Scalar color(0, 0, 0);
@@ -273,15 +268,181 @@ int main(int argc, char ** argv) {
     }
   }
 
-  
-	cv::threshold(f[4], f[4], 120, 255, cv::THRESH_BINARY);
-	cv::threshold(f[4], f[4], 120, 255, cv::THRESH_BINARY_INV);
-
   Test test = Test();
   cout << "Score: " << test.getScore(answersMult, answersVF) << endl;
 
-	imshow("Display frame", f[4]);
-	imshow("Grid", grid);
+
+	//RGB = BGR
+	Scalar orange(0,165,255);
+	Scalar red(0,0,200);
+	Scalar green(0,200,0);
+
+	threshold(grid, grid, 120, 255, THRESH_BINARY);
+	threshold(grid, grid, 120, 255, THRESH_BINARY_INV);
+	cvtColor(grid, grid, COLOR_GRAY2BGR);
+	
+	for(int i = 0; i < 42; i++){
+		Point tmpPoint;
+		if(answersMult[i] == test.correctMult[i]){
+			switch(answersMult[i]){
+				case OptionsMult::A:
+					tmpPoint.x = colWidth * ((i/14)*5 + 1);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+				case OptionsMult::B:
+					tmpPoint.x = colWidth * ((i/14)*5 + 2);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+				case OptionsMult::C:
+					tmpPoint.x = colWidth * ((i/14)*5 + 3);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+				case OptionsMult::D:
+					tmpPoint.x = colWidth * ((i/14)*5 + 4);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+			}
+		}
+		else if(answersMult[i] == OptionsMult::NMUL){
+			switch(test.correctMult[i]){
+				case OptionsMult::A:
+					tmpPoint.x = colWidth * ((i/14)*5 + 1);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), orange, 2);
+					break;
+				case OptionsMult::B:
+					tmpPoint.x = colWidth * ((i/14)*5 + 2);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), orange, 2);
+					break;
+				case OptionsMult::C:
+					tmpPoint.x = colWidth * ((i/14)*5 + 3);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), orange, 2);
+					break;
+				case OptionsMult::D:
+					tmpPoint.x = colWidth * ((i/14)*5 + 4);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), orange, 2);
+					break;
+			}
+		}
+		else{
+			switch(answersMult[i]){
+				case OptionsMult::A:
+					tmpPoint.x = colWidth * ((i/14)*5 + 1);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), red, 2);
+					break;
+				case OptionsMult::B:
+					tmpPoint.x = colWidth * ((i/14)*5 + 2);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), red, 2);
+					break;
+				case OptionsMult::C:
+					tmpPoint.x = colWidth * ((i/14)*5 + 3);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), red, 2);
+					break;
+				case OptionsMult::D:
+					tmpPoint.x = colWidth * ((i/14)*5 + 4);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), red, 2);
+					break;
+			}
+			switch(test.correctMult[i]){
+				case OptionsMult::A:
+					tmpPoint.x = colWidth * ((i/14)*5 + 1);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+				case OptionsMult::B:
+					tmpPoint.x = colWidth * ((i/14)*5 + 2);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+				case OptionsMult::C:
+					tmpPoint.x = colWidth * ((i/14)*5 + 3);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+				case OptionsMult::D:
+					tmpPoint.x = colWidth * ((i/14)*5 + 4);
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+			}
+		}
+	}
+
+
+	for(int i = 0; i < 12; i++){
+		Point tmpPoint;
+		if(answersVF[i] == test.correctVF[i]){
+			switch(answersVF[i]){
+				case OptionsVF::V:
+					tmpPoint.x = colWidth * 16;
+					tmpPoint.y = lineHeigth*(i+1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+				case OptionsVF::F:
+					tmpPoint.x = colWidth * 17;
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+			}
+		}
+		else if(answersVF[i] == OptionsVF::NVF){
+			switch(test.correctVF[i]){
+				case OptionsVF::V:
+					tmpPoint.x = colWidth * 16;
+					tmpPoint.y = lineHeigth*(i+1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), orange, 2);
+					break;
+				case OptionsVF::F:
+					tmpPoint.x = colWidth * 17;
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), orange, 2);
+					break;
+			}
+		}
+		else{
+			switch(test.correctVF[i]){
+				case OptionsVF::V:
+					tmpPoint.x = colWidth * 16;
+					tmpPoint.y = lineHeigth*(i+1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+				case OptionsVF::F:
+					tmpPoint.x = colWidth * 17;
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), green, 2);
+					break;
+			}
+			switch(answersVF[i]){
+				case OptionsVF::V:
+					tmpPoint.x = colWidth * 16;
+					tmpPoint.y = lineHeigth*(i+1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), red, 2);
+					break;
+				case OptionsVF::F:
+					tmpPoint.x = colWidth * 17;
+					tmpPoint.y = lineHeigth*(i%14 + 1);
+					rectangle(grid, tmpPoint, Point(tmpPoint.x + colWidth, tmpPoint.y + lineHeigth), red, 2);
+					break;
+			}
+		}
+	}
+
+	cvtColor(imReg, imReg, COLOR_GRAY2BGR);	
+	grid.copyTo(imReg(Rect(138, 515, grid.cols, grid.rows)));
+	namedWindow("Display frame", WINDOW_NORMAL);
+	imshow("Display frame", imReg);
+	//imshow("Grid", imReg);
 	waitKey(0);
 
 }
