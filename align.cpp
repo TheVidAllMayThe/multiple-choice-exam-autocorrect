@@ -193,15 +193,23 @@ int main(int argc, char ** argv) {
 		
 		Rect border(Point(0, 0), f[4].size());
 		Scalar color(0, 0, 0);
-		int thickness = 2;
-		rectangle(f[4], border, color, thickness);
-		Mat element = getStructuringElement(MORPH_CROSS, Size(3, 3));
+		int thickness = 4;
+		Mat element = getStructuringElement(MORPH_RECT, Size(3, 3));
 		for(int i = 0; i < 42; i++){
 			rectangle(a[i], border, color, thickness);
 			rectangle(b[i], border, color, thickness);
 			rectangle(c[i], border, color, thickness);
 			rectangle(d[i], border, color, thickness);
 		
+			/*
+			rectangle(a[6], border, color, thickness);
+			imshow("a0", a[6]);
+			dilate(a[6], a[6], element);
+			imshow("a02", a[6]);
+			waitKey(0);
+			return 0;
+			*/
+
 			dilate(a[i], a[i], element);
 			dilate(b[i], b[i], element);
 			dilate(c[i], c[i], element);
@@ -211,17 +219,17 @@ int main(int argc, char ** argv) {
 			rectangle(b[i], border, color, thickness);
 			rectangle(c[i], border, color, thickness);
 			rectangle(d[i], border, color, thickness);
-
+			
 			if(i < 12){
 				rectangle(f[i], border, color, thickness);
 				rectangle(v[i], border, color, thickness);
-
+				/*
 				dilate(v[i], v[i], element);
 				dilate(f[i], f[i], element);
 
 				rectangle(f[i], border, color, thickness);
 				rectangle(v[i], border, color, thickness);
-
+				*/
 			}
 		}
 
@@ -229,18 +237,21 @@ int main(int argc, char ** argv) {
 		vector<OptionsVF> answersVF;
 
 		
+		float minPercentage = 5.0;
+		float maxPercentage = 60.0;
+
 		for(int i = 0; i < 42; i++){
 			vector<OptionsMult> tmpAns;
-			if(getWhitePercentage(a[i]) > 5.0 && getWhitePercentage(a[i]) < 60){
+			if(getWhitePercentage(a[i]) > minPercentage && getWhitePercentage(a[i]) < maxPercentage){
 				tmpAns.push_back(OptionsMult::A);
 			}
-			if(getWhitePercentage(b[i]) > 5.0 && getWhitePercentage(b[i]) < 60){
+			if(getWhitePercentage(b[i]) > minPercentage && getWhitePercentage(b[i]) < maxPercentage){
 				tmpAns.push_back(OptionsMult::B);
 			}
-			if(getWhitePercentage(c[i]) > 5.0 && getWhitePercentage(c[i]) < 60){
+			if(getWhitePercentage(c[i]) > minPercentage && getWhitePercentage(c[i]) < maxPercentage){
 				tmpAns.push_back(OptionsMult::C);
 			}
-			if(getWhitePercentage(d[i]) > 5.0 && getWhitePercentage(d[i]) < 60){
+			if(getWhitePercentage(d[i]) > minPercentage && getWhitePercentage(d[i]) < maxPercentage){
 				tmpAns.push_back(OptionsMult::D);
 			}
 			if(tmpAns.size() == 1){
