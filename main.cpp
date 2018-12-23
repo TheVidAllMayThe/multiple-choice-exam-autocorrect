@@ -19,7 +19,9 @@ float getWhitePercentage(Mat im){
   return ((float)countNonZero(im))/(im.rows * im.cols) * 100; 
 }
 
-void alignImages(Mat & im1, Mat & im2, Mat & im1Reg, Mat & h)
+
+// Credits to https://www.learnopencv.com/image-alignment-feature-based-using-opencv-c-python/
+void alignImages(Mat & im1, Mat & im2, Mat & im1Reg, Mat & h, Mat & imMatches)
 
 {
 
@@ -47,7 +49,6 @@ void alignImages(Mat & im1, Mat & im2, Mat & im1Reg, Mat & h)
 
 
 	// Draw top matches
-	Mat imMatches;
 	drawMatches(im1, keypoints1, im2, keypoints2, matches, imMatches);
 	imwrite("matches.jpg", imMatches);
 
@@ -64,57 +65,76 @@ void alignImages(Mat & im1, Mat & im2, Mat & im1Reg, Mat & h)
 	h = findHomography(points1, points2, RANSAC);
 
 	// Use homography to warp image
+	
 	warpPerspective(im1, im1Reg, h, im2.size());
-
+	
+	
 }
 
 
 int main(int argc, char ** argv) {
 	// Read reference image
+	string arg1 = string(argv[1]);
+	
+
+	if((arg1 != "-image" && arg1 != "-video") || (arg1 == "-image" && argc != 3)){
+		cout << "usage: ./main [-image input_file | -video]" << endl;
+		return 1;
+	}
+
 	VideoCapture cap;
-	if(!cap.open(0))
-		return 0;
+	if(arg1 == "-video"){
+		if(!cap.open(0))
+			return 0;
+	}
 
 	string refFilename("page2.bmp");
 	cout << "Reading reference image : " << refFilename << endl;
 	Mat imReference = imread(refFilename);
 	cvtColor(imReference, imReference, COLOR_BGR2GRAY);
 	for(;;){
-		system("CLS");
-
 		string imFilename;
 		// Read image to be aligned
 		Mat im;
-		if(argc > 1){
-			imFilename = argv[1];
+		
+		if(arg1 == "-image"){
+			imFilename = argv[2];
 			cout << "Reading image to align : " << imFilename << endl;
 			im = imread(imFilename);
 		}
 		else{
 			cap >> im;
+			imshow("Camera", im);
 			if( im.empty() ) break;
 		}
 
-		imshow("Camera", im);
-		if( cv::waitKey(10) == 27 ) break;
-		
-		
-		
-		
+		//Mat normim;
 
 		cvtColor(im, im, COLOR_BGR2GRAY);
+
+		if( cv::waitKey(10) == 27 ) break;
+		
+
+		
 		
 
 		//Contrast Adjustment
-		//im = im * 1.5;
+		//im = im * 0.9;
 
 		// Registered image will be resotred in imReg. 
 		// The estimated homography will be stored in h. 
-		Mat imReg, h;
+		Mat imReg, h, imMatches;
 
 		// Align images
 		cout << "Aligning images ..." << endl;
-		alignImages(im, imReference, imReg, h);
+
+
+		try{
+
+			alignImages(im, imReference, imReg, h, imMatches);
+		}catch(const cv::Exception e){
+			continue;
+		}
 
 		// Write aligned image to disk. 
 		string outFilename("aligned.jpg");
@@ -134,8 +154,8 @@ int main(int argc, char ** argv) {
 
 		cout << colWidth << endl;
 
-		threshold(grid, grid, 120, 255, THRESH_BINARY);
-		threshold(grid, grid, 120, 255, THRESH_BINARY_INV);
+		threshold(grid, grid, 145, 255, THRESH_BINARY);
+		threshold(grid, grid, 145, 255, THRESH_BINARY_INV);
 
 		vector < Mat > cols;
 		vector < Mat > a, b, c, d, v, f;
@@ -200,16 +220,7 @@ int main(int argc, char ** argv) {
 			rectangle(b[i], border, color, thickness);
 			rectangle(c[i], border, color, thickness);
 			rectangle(d[i], border, color, thickness);
-		
-			/*
-			rectangle(a[6], border, color, thickness);
-			imshow("a0", a[6]);
-			dilate(a[6], a[6], element);
-			imshow("a02", a[6]);
-			waitKey(0);
-			return 0;
-			*/
-
+	
 			dilate(a[i], a[i], element);
 			dilate(b[i], b[i], element);
 			dilate(c[i], c[i], element);
@@ -223,13 +234,13 @@ int main(int argc, char ** argv) {
 			if(i < 12){
 				rectangle(f[i], border, color, thickness);
 				rectangle(v[i], border, color, thickness);
-				/*
+				
 				dilate(v[i], v[i], element);
 				dilate(f[i], f[i], element);
 
 				rectangle(f[i], border, color, thickness);
 				rectangle(v[i], border, color, thickness);
-				*/
+				
 			}
 		}
 
@@ -493,11 +504,22 @@ int main(int argc, char ** argv) {
 
 		cvtColor(imReg, imReg, COLOR_GRAY2BGR);	
 		grid.copyTo(imReg(Rect(138, 515, grid.cols, grid.rows)));
-		namedWindow("Display frame", WINDOW_NORMAL);
-		imshow("Display frame", imReg);
+		namedWindow("Corrected Test", WINDOW_NORMAL);
+		namedWindow("Original Image", WINDOW_NORMAL);
+		namedWindow("Feature Mapping", WINDOW_NORMAL);
+
+		resizeWindow("Corrected Test", 640,1000);
+		resizeWindow("Original Image", 640,1000);
+		resizeWindow("Feature Mapping", 640,1000);
+		moveWindow("Corrected Test", 0,0);
+		moveWindow("Original Image", 640,0);
+		moveWindow("Feature Mapping", 640*2,0);
+		imshow("Original Image", im);
+		imshow("Corrected Test", imReg);
+		imshow("Feature Mapping", imMatches);
 		//imshow("Grid", imReg);
 		
-		if(argc > 1){
+		if(arg1 != "-video"){
 			waitKey(0);
 			return 0;
 		}
